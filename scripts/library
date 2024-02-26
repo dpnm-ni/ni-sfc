@@ -1,0 +1,125 @@
+#!/bin/bash
+
+# Checking requirements, it not exist install them
+function isExist_package() {
+
+  local isUpdated=-1
+
+  for package in ${requirement[@]}
+  do
+  	isExist=`dpkg -l | grep $package`
+  	if [ -z "$isExist" ]; then
+
+      if [[ $isUpdated -lt 0 ]]; then
+        sudo apt-get -y update
+        isUpdated=1
+      fi
+
+  		sudo apt-get -y install $package
+  	fi
+  done
+}
+
+
+
+# Checking whether the component exists in the array
+# Input: instance name
+# Output: shared variable (if exist 1, if not 1)= check_result
+isExist_in_list() {
+  local name
+  name=$1
+  check_result=""
+
+  for vnf in ${vnf_list[@]}
+  do
+    if [[ "$name" == *"$vnf"* ]]; then
+      check_result=1
+      return
+    fi
+  done
+
+    check_result=-1
+}
+
+
+# Checking whether hostname is set on the VM
+function isSet_hostname() {
+
+  hostname=`hostname`
+  hostname_setting=`sudo cat /etc/hosts | grep $hostname`
+
+  if [[ -z $hostname_setting ]]; then
+  	sudo chmod 777 /etc/hosts
+  	sudo echo 127.0.1.1 `hostname` >> /etc/hosts
+  	sudo chmod 644 /etc/hosts
+  fi
+}
+
+
+
+# Getting information from a monitoring module
+function get_input() {
+  input=input.json
+
+  # module
+  var_module=`cat $input | jq .module`
+  monitoring_url=`echo $var_module | jq --raw-output .monitoring_url`
+  query_vnfi_url="$monitoring_url/vnfinstances"
+  sfc_path_module_url=`echo $var_module | jq --raw-output .sfc_path_module_url`
+  auto_scaling_module_url=`echo $var_module | jq --raw-output .auto_scaling_module_url`
+
+  # openstack_conf
+  var_openstack_conf=`cat $input | jq .openstack_conf`
+  ssh_id=`echo $var_openstack_conf | jq --raw-output .vnf_instance_id`
+  ssh_pw=`echo $var_openstack_conf | jq --raw-output .vnf_instance_pw`
+  prefix=`echo $var_openstack_conf | jq .prefix`
+  network_id=`echo $var_openstack_conf | jq .network_id`
+  vnfs=`echo $var_openstack_conf | jq .vnfs | jq --raw-output .[]`
+
+  # image
+  var_image=`cat $input | jq .image`
+
+  # stress
+  var_stress=`cat $input | jq .stress`
+  timeout=`echo $var_stress | jq -r .timeout`
+  repeat_num=`echo $var_stress | jq -r .repeat_num`
+
+  # firewall
+  var_firewall=`cat $input | jq .firewall`
+  subnet=`echo $var_firewall | jq -r .subnet`
+  ip_1=`echo $var_firewall | jq -r .ip_1`
+  ip_2=`echo $var_firewall | jq -r .ip_2`
+
+  # flowmonitor
+  var_flowmonitor=`cat $input | jq .flowmonitor`
+  port=`echo $var_flowmonitor | jq -r .port`
+
+  # dpi
+  var_dpi=`cat $input | jq .ids`
+  interface=`echo $var_dpi | jq -r .interface`
+
+  # ids
+  var_ids=`cat $input | jq .ids`
+  interface=`echo $var_ids | jq -r .interface`
+
+  # proxy
+  var_proxy=`cat $input | jq .proxy`
+  front_port=`echo $var_proxy | jq -r .front_port`
+  back_port=`echo $var_proxy | jq -r .back_port | jq -r .[]`
+  back_port_list=($back_port)
+}
+
+
+
+# Query to get VNF instances information from testbed
+function get_vnf_instance_data() {
+  query_result=`curl $query_vnfi_url | jq .[]`
+
+  name=`echo $query_result | jq . | jq "select(.name | startswith($prefix))" | jq --raw-output .name`
+  port=`echo $query_result | jq . | jq "select(.name | startswith($prefix))" | jq .ports`
+  ip_address=`echo $port | jq ".[] | select(.network_id == $network_id)" | jq .ip_addresses | jq --raw-output .[]`
+
+  name_list=($name)
+  ip_list=($ip_address)
+  vnf_list=($vnfs)
+}

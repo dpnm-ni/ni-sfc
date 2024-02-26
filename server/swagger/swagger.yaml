@@ -1,0 +1,199 @@
+---
+swagger: "2.0"
+info:
+  description: "NI SFC SFC Path Selection Module for the NI project."
+  version: "1.0.0"
+  title: "NI SFC Path Selection Module"
+#host: "virtserver.swaggerhub.com"
+#basePath: "/dylee90/ni-sfc-sub-module/1.0.0"
+tags:
+- name: "ni_sfc_sub_module"
+  description: "Perform management decisions using ML algorithms."
+schemes:
+- "https"
+- "http"
+paths:
+  /measure_response_time:
+    post:
+      tags:
+      - "Test SFC Path Selection APIs"
+      summary: "measure_response_time"
+      operationId: "measure_response_time"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        "200":
+          description: "Success."
+          schema:
+            type: "string"
+        "400":
+          description: "Invalid parameters supplied."
+      x-swagger-router-controller: "server.controllers.default_controller"
+  /build_test_environment:
+    post:
+      tags:
+      - "Test SFC Path Selection APIs"
+      summary: "build test enviornment for auto-scaling"
+      operationId: "build_test_environment"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        "200":
+          description: "Success."
+          schema:
+            type: "string"
+        "400":
+          description: "Invalid parameters supplied."
+      x-swagger-router-controller: "server.controllers.default_controller"
+  /path_selection/q_learning:
+    post:
+      tags:
+      - "SFC Path Selection APIs"
+      summary: "sfc path selection using q-learning"
+      operationId: "q_learning_sfc"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "SFC Info. should be inserted"
+        required: true
+        schema:
+          $ref: "#/definitions/SFCInfo"
+      responses:
+        "200":
+          description: "Success."
+          schema:
+            type: "string"
+        "400":
+          description: "Invalid parameters supplied."
+      x-swagger-router-controller: "server.controllers.default_controller"
+  /path_selection/random:
+    post:
+      tags:
+      - "SFC Path Selection APIs"
+      summary: "sfc path selection randomly"
+      operationId: "random_sfc"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "SFC Info. should be inserted"
+        required: true
+        schema:
+          $ref: "#/definitions/SFCInfo"
+      responses:
+        "200":
+          description: "Success."
+          schema:
+            type: "string"
+        "400":
+          description: "Invalid parameters supplied."
+      x-swagger-router-controller: "server.controllers.default_controller"
+  /path_selection/dqn:
+    post:
+      tags:
+      - "SFC Path Selection APIs"
+      summary: "sfc path selection by DQN"
+      operationId: "dqn_sfc"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "SFC Info. should be inserted"
+        required: true
+        schema:
+          $ref: "#/definitions/SFCInfo"
+      responses:
+        "200":
+          description: "Success."
+          schema:
+            type: "string"
+        "400":
+          description: "Invalid parameters supplied."
+      x-swagger-router-controller: "server.controllers.default_controller"
+  /path_selection/del_dqn_training/{id}:
+    delete:
+      tags:
+      - "SFC Path Selection APIs"
+      summary: "Remove a DQN training process."
+      operationId: "del_dqn_training"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "Success."
+      x-swagger-router-controller: "server.controllers.default_controller"
+  /path_selection/get_training_process:
+    get:
+      tags:
+      - "SFC Path Selection APIs"
+      summary: "Return training process IDs"
+      operationId: "get_training_process"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/Training_process"
+      x-swagger-router-controller: "server.controllers.default_controller"
+  /path_selection/dqn_training:
+    post:
+      tags:
+      - "SFC Path Selection APIs"
+      summary: "Training a DQN model"
+      description: ""
+      operationId: "dqn_training"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "SFC Info. should be inserted"
+        required: true
+        schema:
+          $ref: "#/definitions/SFCInfo"
+      responses:
+        "200":
+          description: "Success."
+          schema:
+            type: "string"
+        "400":
+          description: "Invalid parameters supplied."
+      x-swagger-router-controller: "server.controllers.default_controller"
+definitions:
+  SFCInfo:
+    type: "object"
+    properties:
+      sfcr_name:
+        type: "string"
+      sfc_name:
+        type: "string"
+  Training_process:
+    type: "object"
+    properties:
+      id:
+        type: "array"
+        description: "List of process ids"
+        items:
+          type: "string"
+externalDocs:
+  description: "Find out more about DPNM NI."
+  url: "http://dpnm.postech.ac.kr/"

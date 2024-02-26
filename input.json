@@ -1,0 +1,37 @@
+{
+    "openstack_conf": {
+        "network_id": "2d8bb3fc-fd89-49dc-84ea-5d304e372c87",
+        "vnf_instance_id": "ubuntu",
+        "prefix": "mjniscaling-",
+        "vnfs": [
+            "client",
+            "firewall",
+            "flowmonitor",
+            "dpi",
+            "ids",
+            "proxy"
+        ],
+        "vnf_instance_pw": "ubuntu"
+    },
+    "stress": {
+        "repeat_num": 20,
+        "timeout": "20s"
+    },
+    "dashboard": {
+        "pw": "cjdakfnemfRo",
+        "prefix": "mjtestni-",
+        "id": "admin",
+        "vnfs": [
+            "firewall",
+            "flowmonitor",
+            "dpi",
+            "ids",
+            "proxy"
+        ],
+        "url": "141.223.181.149:3000"
+    },
+    "module": {
+        "monitoring_url": "http://141.223.181.149:8383",
+        "nfvo_url": "http://141.223.181.149:8181"
+    }
+}

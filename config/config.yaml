@@ -1,0 +1,14 @@
+ni_mon:
+  host: http://141.223.181.149:8383 #http://<ni_mon_ip>:<ni_mon_port>
+ni_nfvo:
+  host: http://141.223.181.149:8181 #http://<ni_nfvo_ip>:<ni_nfvo_port>
+instance:                                   # Information about instance
+  monitor: 141.223.181.191
+  id: ubuntu                                # SSH ID of new VNF instance
+  password: ubuntu                            # SSH ID of new VNF instance
+image:                                      # Image IDs used by OpenStack
+  firewall: 15e16656-0e93-4593-9726-9195ba2babe3
+  flowmonitor: a458f634-958a-4182-8d4b-115a7b4c4006
+  dpi: 381f99c8-536d-4915-aad7-8fd974fcbabd
+  ids: 414aafa2-1380-4499-bbde-f5f8caf75cf5
+  proxy: 92e7b3f3-bb91-4980-a20a-0a802f332dd1
